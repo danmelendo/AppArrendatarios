@@ -83,11 +83,16 @@ function Home() {
         </div>
         <div className="space-y-3">
           {[
-            { title: "Coliving Centro", city: "Medellín · El Poblado", price: "$1.200.000/mes" },
-            { title: "Loft Luminoso", city: "Bogotá · Chapinero", price: "$1.800.000/mes" },
-            { title: "Casa Compartida", city: "Cali · Granada", price: "$950.000/mes" },
+            { id: "p1", title: "Coliving Centro", city: "Medellín · El Poblado", price: "$1.200.000/mes" },
+            { id: "p2", title: "Loft Luminoso", city: "Bogotá · Chapinero", price: "$1.800.000/mes" },
+            { id: "p3", title: "Casa Compartida", city: "Cali · Granada", price: "$950.000/mes" },
           ].map((l) => (
-            <article key={l.title} className="flex gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-soft)]">
+            <Link
+              key={l.id}
+              to="/propiedad/$id"
+              params={{ id: l.id }}
+              className="flex gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+            >
               <div className="h-20 w-20 shrink-0 rounded-xl bg-primary-soft" />
               <div className="flex flex-1 flex-col justify-between">
                 <div>
@@ -96,7 +101,7 @@ function Home() {
                 </div>
                 <p className="text-sm font-semibold text-primary">{l.price}</p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
