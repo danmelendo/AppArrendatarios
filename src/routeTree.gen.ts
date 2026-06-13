@@ -13,6 +13,7 @@ import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as FidelidadRouteImport } from './routes/fidelidad'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PropiedadIdRouteImport } from './routes/propiedad.$id'
 import { Route as AuthRegistroRouteImport } from './routes/auth.registro'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropiedadIdRoute = PropiedadIdRouteImport.update({
+  id: '/propiedad/$id',
+  path: '/propiedad/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegistroRoute = AuthRegistroRouteImport.update({
   id: '/auth/registro',
   path: '/auth/registro',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/registro': typeof AuthRegistroRoute
+  '/propiedad/$id': typeof PropiedadIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/registro': typeof AuthRegistroRoute
+  '/propiedad/$id': typeof PropiedadIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/registro': typeof AuthRegistroRoute
+  '/propiedad/$id': typeof PropiedadIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/auth/login'
     | '/auth/registro'
+    | '/propiedad/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/auth/login'
     | '/auth/registro'
+    | '/propiedad/$id'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/auth/login'
     | '/auth/registro'
+    | '/propiedad/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   PerfilRoute: typeof PerfilRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegistroRoute: typeof AuthRegistroRoute
+  PropiedadIdRoute: typeof PropiedadIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/propiedad/$id': {
+      id: '/propiedad/$id'
+      path: '/propiedad/$id'
+      fullPath: '/propiedad/$id'
+      preLoaderRoute: typeof PropiedadIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/registro': {
       id: '/auth/registro'
       path: '/auth/registro'
@@ -162,7 +182,18 @@ const rootRouteChildren: RootRouteChildren = {
   PerfilRoute: PerfilRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegistroRoute: AuthRegistroRoute,
+  PropiedadIdRoute: PropiedadIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
