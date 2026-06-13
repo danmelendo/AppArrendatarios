@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as FidelidadRouteImport } from './routes/fidelidad'
+import { Route as ContratosRouteImport } from './routes/contratos'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PropiedadIdRouteImport } from './routes/propiedad.$id'
@@ -25,6 +26,11 @@ const PerfilRoute = PerfilRouteImport.update({
 const FidelidadRoute = FidelidadRouteImport.update({
   id: '/fidelidad',
   path: '/fidelidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContratosRoute = ContratosRouteImport.update({
+  id: '/contratos',
+  path: '/contratos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BuscarRoute = BuscarRouteImport.update({
@@ -56,6 +62,7 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/buscar': typeof BuscarRoute
+  '/contratos': typeof ContratosRoute
   '/fidelidad': typeof FidelidadRoute
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/buscar': typeof BuscarRoute
+  '/contratos': typeof ContratosRoute
   '/fidelidad': typeof FidelidadRoute
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/buscar': typeof BuscarRoute
+  '/contratos': typeof ContratosRoute
   '/fidelidad': typeof FidelidadRoute
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/buscar'
+    | '/contratos'
     | '/fidelidad'
     | '/perfil'
     | '/auth/login'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/buscar'
+    | '/contratos'
     | '/fidelidad'
     | '/perfil'
     | '/auth/login'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/buscar'
+    | '/contratos'
     | '/fidelidad'
     | '/perfil'
     | '/auth/login'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BuscarRoute: typeof BuscarRoute
+  ContratosRoute: typeof ContratosRoute
   FidelidadRoute: typeof FidelidadRoute
   PerfilRoute: typeof PerfilRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/fidelidad'
       fullPath: '/fidelidad'
       preLoaderRoute: typeof FidelidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contratos': {
+      id: '/contratos'
+      path: '/contratos'
+      fullPath: '/contratos'
+      preLoaderRoute: typeof ContratosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/buscar': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BuscarRoute: BuscarRoute,
+  ContratosRoute: ContratosRoute,
   FidelidadRoute: FidelidadRoute,
   PerfilRoute: PerfilRoute,
   AuthLoginRoute: AuthLoginRoute,
