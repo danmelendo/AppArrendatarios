@@ -9,38 +9,128 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as FidelidadRouteImport } from './routes/fidelidad'
+import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRegistroRouteImport } from './routes/auth.registro'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
 
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FidelidadRoute = FidelidadRouteImport.update({
+  id: '/fidelidad',
+  path: '/fidelidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuscarRoute = BuscarRouteImport.update({
+  id: '/buscar',
+  path: '/buscar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRegistroRoute = AuthRegistroRouteImport.update({
+  id: '/auth/registro',
+  path: '/auth/registro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/buscar': typeof BuscarRoute
+  '/fidelidad': typeof FidelidadRoute
+  '/perfil': typeof PerfilRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/registro': typeof AuthRegistroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/buscar': typeof BuscarRoute
+  '/fidelidad': typeof FidelidadRoute
+  '/perfil': typeof PerfilRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/registro': typeof AuthRegistroRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/buscar': typeof BuscarRoute
+  '/fidelidad': typeof FidelidadRoute
+  '/perfil': typeof PerfilRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/registro': typeof AuthRegistroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/buscar'
+    | '/fidelidad'
+    | '/perfil'
+    | '/auth/login'
+    | '/auth/registro'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/buscar'
+    | '/fidelidad'
+    | '/perfil'
+    | '/auth/login'
+    | '/auth/registro'
+  id:
+    | '__root__'
+    | '/'
+    | '/buscar'
+    | '/fidelidad'
+    | '/perfil'
+    | '/auth/login'
+    | '/auth/registro'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuscarRoute: typeof BuscarRoute
+  FidelidadRoute: typeof FidelidadRoute
+  PerfilRoute: typeof PerfilRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegistroRoute: typeof AuthRegistroRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fidelidad': {
+      id: '/fidelidad'
+      path: '/fidelidad'
+      fullPath: '/fidelidad'
+      preLoaderRoute: typeof FidelidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buscar': {
+      id: '/buscar'
+      path: '/buscar'
+      fullPath: '/buscar'
+      preLoaderRoute: typeof BuscarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +138,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/registro': {
+      id: '/auth/registro'
+      path: '/auth/registro'
+      fullPath: '/auth/registro'
+      preLoaderRoute: typeof AuthRegistroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuscarRoute: BuscarRoute,
+  FidelidadRoute: FidelidadRoute,
+  PerfilRoute: PerfilRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegistroRoute: AuthRegistroRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
