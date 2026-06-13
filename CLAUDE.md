@@ -453,3 +453,96 @@ Las pantallas `/auth/login` y `/auth/registro` ya tienen UI completa con validac
 - [ ] ¿Es lectura pública? → filtrar por `status`/`active`; nunca `grant select to anon` sin condicionar en la política.
 - [ ] ¿Server fn privada? → `.middleware([requireSupabaseAuth])`.
 - [ ] ¿Usa `supabaseAdmin`? → `await import("@/integrations/supabase/client.server")` **dentro** del `.handler()`.
+
+---
+
+## 11. Módulo de Contratos (frontend listo, backend TODO)
+
+Implementado en `src/routes/contratos.tsx` con tres pestañas:
+
+1. **Formalizar** — formulario validado con `zod` (nombre, documento, email, teléfono, fecha de inicio, duración, notas). Si el usuario llega desde una propiedad (`/propiedad/$id` → CTA "Formalizar contrato"), los datos llegan por `search params` y se asocian al draft.
+2. **Pre-firma** — `SignaturePad` basado en `<canvas>` + pointer events; guarda dataURL PNG. El usuario debe aceptar la declaración para confirmar.
+3. **Documentos** — drag/drop nativo (`<input type="file" multiple>`) con validación de tamaño (8 MB) y tipo (PDF/JPG/PNG/WEBP). Botón "Enviar a la inmobiliaria" marca el contrato como `submitted`.
+
+**Persistencia actual:** todo en `localStorage` vía `src/lib/local-store.ts` (`contractsStore`, `docsStore`). Esto es **demo** — no envía nada al backend.
+
+### 11.1 TODO Claude al activar Cloud
+
+**Migración nueva** (añadir a §6):
+
+```sql
+create type public.contract_status as enum ('draft','pre_signed','submitted','approved','rejected','active','ended');
+
+create table public.contracts (
+  id              uuid primary key default gen_random_uuid(),
+  tenant_id       uuid not null references auth.users(id) on delete cascade,
+  property_id     uuid references public.properties(id) on delete set null,
+  status          contract_status not null default 'draft',
+  full_name       text not null,
+  document        text not null,
+  email           text not null,
+  phone           text not null,
+  start_date      date not null,
+  months          int not null check (months between 1 and 36),
+  notes           text,
+  signature_url   text,         -- ruta en Storage (bucket privado)
+  signed_at       timestamptz,
+  submitted_at    timestamptz,
+  reviewed_by     uuid references auth.users(id),
+  reviewed_at     timestamptz,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now()
+);
+
+create table public.contract_documents (
+  id           uuid primary key default gen_random_uuid(),
+  contract_id  uuid not null references public.contracts(id) on delete cascade,
+  storage_path text not null,    -- p.ej. 'contract-docs/<contract_id>/<uuid>-cedula.pdf'
+  file_name    text not null,
+  mime_type    text not null,
+  size_bytes   bigint not null,
+  uploaded_at  timestamptz not null default now()
+);
+```
+
+**RLS (patrón own-row + admin):**
+
+```sql
+alter table public.contracts enable row level security;
+grant select, insert, update on public.contracts to authenticated;
+grant all on public.contracts to service_role;
+
+create policy "tenant_select" on public.contracts for select to authenticated
+  using (tenant_id = auth.uid() or public.has_role(auth.uid(),'admin'));
+
+create policy "tenant_insert" on public.contracts for insert to authenticated
+  with check (tenant_id = auth.uid());
+
+-- El inquilino sólo puede editar mientras esté en draft/pre_signed.
+create policy "tenant_update_draft" on public.contracts for update to authenticated
+  using (tenant_id = auth.uid() and status in ('draft','pre_signed'))
+  with check (tenant_id = auth.uid());
+
+-- Admin puede mover de submitted → approved/rejected.
+create policy "admin_update" on public.contracts for update to authenticated
+  using (public.has_role(auth.uid(),'admin'))
+  with check (public.has_role(auth.uid(),'admin'));
+
+-- Mismo patrón para contract_documents (ownership vía join al contrato padre).
+```
+
+**Storage:**
+- Crear bucket privado `contract-docs` con `supabase--storage_create_bucket(name="contract-docs", public=false)`.
+- Política en `storage.objects`: el usuario sólo lee/escribe archivos cuya `name` empiece por `<contract_id>/` y `EXISTS (SELECT 1 FROM contracts WHERE id = ... AND tenant_id = auth.uid())`. Admin lee todo.
+
+**Server functions a crear (`src/lib/contracts.functions.ts`):**
+- `saveContract({ ...form })` — upsert sobre `contracts` (`.middleware([requireSupabaseAuth])`).
+- `attachSignature({ contractId, signaturePngBase64 })` — sube PNG a `contract-docs/<id>/signature.png` y actualiza `signature_url` + `signed_at` + `status='pre_signed'`.
+- `uploadDocument({ contractId, file })` — sube a Storage y registra en `contract_documents`.
+- `submitContract({ contractId })` — valida que haya firma + al menos 1 documento y mueve a `submitted` + `submitted_at`. Notifica al backoffice (insert en `audit_log`).
+
+**Migración del cliente local → cloud:** al primer login tras activar Cloud, leer `contractsStore.list()` / `docsStore.list()` y hacer push al backend; luego `localStorage.removeItem(...)`.
+
+### 11.2 Vista en el backoffice
+- Lista de contratos `status='submitted'` con detalle (datos, firma, documentos).
+- Botones aprobar/rechazar → escribe en `contracts.status` + `reviewed_by` + `reviewed_at` + (opcional) genera PDF final con la firma y lo sube a Storage como `contract.pdf`.

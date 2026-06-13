@@ -1,6 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { ChevronRight, Settings, Heart, FileText, HelpCircle, LogOut } from "lucide-react";
+import {
+  ChevronRight,
+  Settings,
+  Heart,
+  FileText,
+  HelpCircle,
+  LogOut,
+  FileSignature,
+} from "lucide-react";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
@@ -13,6 +21,28 @@ export const Route = createFileRoute("/perfil")({
 });
 
 function Perfil() {
+  const navigate = useNavigate();
+
+  const items: Array<{
+    icon: typeof Heart;
+    label: string;
+    onClick: () => void;
+  }> = [
+    { icon: FileSignature, label: "Mis contratos", onClick: () => navigate({ to: "/contratos" }) },
+    { icon: Heart, label: "Favoritos", onClick: () => alert("Próximamente: lista de favoritos") },
+    { icon: FileText, label: "Mis reservas", onClick: () => alert("Próximamente: historial de reservas") },
+    { icon: Settings, label: "Ajustes de cuenta", onClick: () => alert("Próximamente") },
+    { icon: HelpCircle, label: "Ayuda y soporte", onClick: () => window.open("mailto:soporte@habita.app") },
+    {
+      icon: LogOut,
+      label: "Cerrar sesión",
+      onClick: () => {
+        // TODO(Claude): supabase.auth.signOut() cuando esté Cloud.
+        alert("Sesión cerrada (demo)");
+      },
+    },
+  ];
+
   return (
     <AppShell>
       <header className="px-5 pt-8">
@@ -37,15 +67,13 @@ function Perfil() {
 
       <section className="px-5 pt-8">
         <ul className="overflow-hidden rounded-2xl border border-border bg-card">
-          {[
-            { icon: Heart, label: "Favoritos" },
-            { icon: FileText, label: "Mis reservas" },
-            { icon: Settings, label: "Ajustes de cuenta" },
-            { icon: HelpCircle, label: "Ayuda y soporte" },
-            { icon: LogOut, label: "Cerrar sesión" },
-          ].map((it, i, arr) => (
+          {items.map((it, i, arr) => (
             <li key={it.label} className={i < arr.length - 1 ? "border-b border-border" : ""}>
-              <button className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
+              <button
+                type="button"
+                onClick={it.onClick}
+                className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-muted/50"
+              >
                 <it.icon className="size-4 text-muted-foreground" />
                 <span className="flex-1 text-sm">{it.label}</span>
                 <ChevronRight className="size-4 text-muted-foreground" />
