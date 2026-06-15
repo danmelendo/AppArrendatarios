@@ -11,5 +11,8 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // Demo estática (sin backend) para embeber por iframe en el portafolio (Vercel).
+    // Genera un shell prerenderizado + bundle cliente; toda la data vive en localStorage.
+    spa: { enabled: true },
   },
 });
