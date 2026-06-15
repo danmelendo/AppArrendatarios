@@ -16,9 +16,17 @@ dist-ssr
 .nitro
 *.local
 
+# Env / secrets
+.env
+.env.*
+!.env.example
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
+
+# Test / tooling artifacts
+.playwright-mcp/
 
 # Editor directories and files
 .vscode/*

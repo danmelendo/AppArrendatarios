@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { signIn, nameFromEmail } from "@/lib/demo-session";
 
 const schema = z.object({
   email: z.string().trim().email("Correo inválido").max(255),
@@ -35,15 +36,21 @@ function Login() {
       return;
     }
     setLoading(true);
-    // TODO(Claude): conectar a Lovable Cloud (supabase.auth.signInWithPassword)
-    // Ver CLAUDE.md §7 "Auth pendiente de Cloud".
+    // Demo: autentica localmente. Sustituir por supabase.auth.signInWithPassword
+    // cuando se conecte el backend (ver CLAUDE.md §8).
     await new Promise((r) => setTimeout(r, 700));
+    signIn({ email, name: nameFromEmail(email) });
     setLoading(false);
-    setErrors({ form: "Auth aún no conectada. Activa Lovable Cloud para habilitar el login." });
+    navigate({ to: "/perfil" });
   }
 
   async function onGoogle() {
-    setErrors({ form: "Sign in con Google requiere Lovable Cloud activado (ver CLAUDE.md §7)." });
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 500));
+    const email = "demo@habita.app";
+    signIn({ email, name: "Usuario Demo" });
+    setLoading(false);
+    navigate({ to: "/perfil" });
   }
 
   return (

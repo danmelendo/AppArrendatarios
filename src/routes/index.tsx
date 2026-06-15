@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { Search, Sparkles, MapPin, Users, ArrowRight } from "lucide-react";
+import { PROPERTIES } from "@/lib/local-store";
+import { PropertyImage } from "@/components/PropertyImage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -82,24 +84,20 @@ function Home() {
           <Link to="/buscar" className="text-xs font-medium text-primary">Ver todo</Link>
         </div>
         <div className="space-y-3">
-          {[
-            { id: "p1", title: "Coliving Centro", city: "Medellín · El Poblado", price: "$1.200.000/mes" },
-            { id: "p2", title: "Loft Luminoso", city: "Bogotá · Chapinero", price: "$1.800.000/mes" },
-            { id: "p3", title: "Casa Compartida", city: "Cali · Granada", price: "$950.000/mes" },
-          ].map((l) => (
+          {PROPERTIES.slice(0, 3).map((l) => (
             <Link
               key={l.id}
               to="/propiedad/$id"
               params={{ id: l.id }}
               className="flex gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
             >
-              <div className="h-20 w-20 shrink-0 rounded-xl bg-primary-soft" />
+              <PropertyImage src={l.image} alt={l.title} className="h-20 w-20 shrink-0 rounded-xl" />
               <div className="flex flex-1 flex-col justify-between">
                 <div>
                   <p className="font-medium">{l.title}</p>
                   <p className="text-xs text-muted-foreground">{l.city}</p>
                 </div>
-                <p className="text-sm font-semibold text-primary">{l.price}</p>
+                <p className="text-sm font-semibold text-primary">{l.price}/mes</p>
               </div>
             </Link>
           ))}

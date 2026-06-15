@@ -70,10 +70,21 @@ export const docsStore = {
   },
 };
 
+// Fotos placeholder de interiores (Unsplash CDN). Si fallan (p.ej. sin conexión),
+// PropertyImage cae a un degradado de marca.
+const IMG = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=640&q=80`;
+
 export const PROPERTIES = [
-  { id: "p1", title: "Coliving Centro", city: "Medellín · El Poblado", price: "$1.200.000", tag: "Coliving" as const },
-  { id: "p2", title: "Loft Luminoso", city: "Bogotá · Chapinero", price: "$1.800.000", tag: "Alquiler" as const },
-  { id: "p3", title: "Casa Compartida", city: "Cali · Granada", price: "$950.000", tag: "Coliving" as const },
-  { id: "p4", title: "Estudio Moderno", city: "Medellín · Laureles", price: "$1.400.000", tag: "Alquiler" as const },
+  { id: "p1", title: "Coliving Malasaña", city: "Madrid · Malasaña", price: "780 €", monthlyEur: 780, tag: "Coliving" as const, bedrooms: 1, bathrooms: 1, area: 16, image: IMG("photo-1522708323590-d24dbb6b0267") },
+  { id: "p2", title: "Loft en Eixample", city: "Barcelona · Eixample", price: "1.250 €", monthlyEur: 1250, tag: "Alquiler" as const, bedrooms: 2, bathrooms: 1, area: 68, image: IMG("photo-1502672260266-1c1ef2d93688") },
+  { id: "p3", title: "Piso en Ruzafa", city: "Valencia · Ruzafa", price: "850 €", monthlyEur: 850, tag: "Alquiler" as const, bedrooms: 2, bathrooms: 1, area: 60, image: IMG("photo-1493809842364-78817add7ffb") },
+  { id: "p4", title: "Coliving Triana", city: "Sevilla · Triana", price: "690 €", monthlyEur: 690, tag: "Coliving" as const, bedrooms: 1, bathrooms: 1, area: 15, image: IMG("photo-1560448204-e02f11c3d0e2") },
+  { id: "p5", title: "Estudio en El Soho", city: "Málaga · El Soho", price: "720 €", monthlyEur: 720, tag: "Alquiler" as const, bedrooms: 1, bathrooms: 1, area: 38, image: IMG("photo-1484154218962-a197022b5858") },
+  { id: "p6", title: "Coliving Indautxu", city: "Bilbao · Indautxu", price: "640 €", monthlyEur: 640, tag: "Coliving" as const, bedrooms: 1, bathrooms: 1, area: 14, image: IMG("photo-1505691938895-1758d7feb511") },
 ];
 export type Property = (typeof PROPERTIES)[number];
+
+export function getProperty(id?: string): Property | undefined {
+  if (!id) return undefined;
+  return PROPERTIES.find((p) => p.id === id);
+}

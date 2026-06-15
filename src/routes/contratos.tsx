@@ -16,6 +16,7 @@ import {
 import {
   contractsStore,
   docsStore,
+  getProperty,
   type ContractDraft,
   type UploadedDoc,
 } from "@/lib/local-store";
@@ -135,6 +136,7 @@ function FormalizarTab({
   onSaved: (id: string) => void;
 }) {
   const existing = currentId ? contractsStore.get(currentId) : undefined;
+  const property = getProperty(propertyId ?? existing?.propertyId);
   const [form, setForm] = useState({
     fullName: existing?.fullName ?? "",
     document: existing?.document ?? "",
@@ -185,9 +187,17 @@ function FormalizarTab({
       {(propertyTitle || existing?.propertyTitle) && (
         <div className="rounded-xl border border-border bg-primary-soft/40 p-3 text-sm">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Propiedad</p>
-          <p className="font-medium text-foreground">
-            {propertyTitle ?? existing?.propertyTitle}
-          </p>
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="font-medium text-foreground">
+              {propertyTitle ?? existing?.propertyTitle}
+            </p>
+            {property && (
+              <p className="shrink-0 font-semibold text-primary">
+                {property.price}
+                <span className="text-xs font-normal text-muted-foreground">/mes</span>
+              </p>
+            )}
+          </div>
         </div>
       )}
 
@@ -296,6 +306,7 @@ function PreFirmaTab({
   onSigned: () => void;
 }) {
   const contract = currentId ? contractsStore.get(currentId) : undefined;
+  const property = getProperty(contract?.propertyId);
   const [sig, setSig] = useState<string | undefined>(contract?.signatureDataUrl);
   const [accepted, setAccepted] = useState(contract?.status === "pre_signed");
   const [saving, setSaving] = useState(false);
@@ -338,6 +349,12 @@ function PreFirmaTab({
           <dd>{contract.startDate}</dd>
           <dt className="text-muted-foreground">Duración</dt>
           <dd>{contract.months} meses</dd>
+          {property && (
+            <>
+              <dt className="text-muted-foreground">Renta mensual</dt>
+              <dd className="font-semibold text-primary">{property.price}</dd>
+            </>
+          )}
         </dl>
       </article>
 

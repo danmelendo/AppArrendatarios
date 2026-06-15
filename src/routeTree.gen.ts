@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as FidelidadRouteImport } from './routes/fidelidad'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as ContratosRouteImport } from './routes/contratos'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as IndexRouteImport } from './routes/index'
@@ -26,6 +27,11 @@ const PerfilRoute = PerfilRouteImport.update({
 const FidelidadRoute = FidelidadRouteImport.update({
   id: '/fidelidad',
   path: '/fidelidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContratosRoute = ContratosRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/buscar': typeof BuscarRoute
   '/contratos': typeof ContratosRoute
+  '/favoritos': typeof FavoritosRoute
   '/fidelidad': typeof FidelidadRoute
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/buscar': typeof BuscarRoute
   '/contratos': typeof ContratosRoute
+  '/favoritos': typeof FavoritosRoute
   '/fidelidad': typeof FidelidadRoute
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/buscar': typeof BuscarRoute
   '/contratos': typeof ContratosRoute
+  '/favoritos': typeof FavoritosRoute
   '/fidelidad': typeof FidelidadRoute
   '/perfil': typeof PerfilRoute
   '/auth/login': typeof AuthLoginRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/buscar'
     | '/contratos'
+    | '/favoritos'
     | '/fidelidad'
     | '/perfil'
     | '/auth/login'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/buscar'
     | '/contratos'
+    | '/favoritos'
     | '/fidelidad'
     | '/perfil'
     | '/auth/login'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/buscar'
     | '/contratos'
+    | '/favoritos'
     | '/fidelidad'
     | '/perfil'
     | '/auth/login'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BuscarRoute: typeof BuscarRoute
   ContratosRoute: typeof ContratosRoute
+  FavoritosRoute: typeof FavoritosRoute
   FidelidadRoute: typeof FidelidadRoute
   PerfilRoute: typeof PerfilRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/fidelidad'
       fullPath: '/fidelidad'
       preLoaderRoute: typeof FidelidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contratos': {
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BuscarRoute: BuscarRoute,
   ContratosRoute: ContratosRoute,
+  FavoritosRoute: FavoritosRoute,
   FidelidadRoute: FidelidadRoute,
   PerfilRoute: PerfilRoute,
   AuthLoginRoute: AuthLoginRoute,
@@ -208,3 +229,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

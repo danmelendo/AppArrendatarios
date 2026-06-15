@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { ArrowLeft, MapPin, FileSignature, Heart } from "lucide-react";
+import { ArrowLeft, MapPin, FileSignature } from "lucide-react";
 import { PROPERTIES } from "@/lib/local-store";
+import { PropertyImage } from "@/components/PropertyImage";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 export const Route = createFileRoute("/propiedad/$id")({
   loader: ({ params }) => {
@@ -40,7 +42,7 @@ function Detail() {
   return (
     <AppShell>
       <div className="relative">
-        <div className="h-64 w-full bg-primary-soft" />
+        <PropertyImage src={property.image} alt={property.title} className="h-64 w-full" />
         <button
           type="button"
           onClick={() => navigate({ to: "/buscar" })}
@@ -49,14 +51,7 @@ function Detail() {
         >
           <ArrowLeft className="size-4" />
         </button>
-        <button
-          type="button"
-          className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-full bg-card/90 shadow-[var(--shadow-soft)] backdrop-blur"
-          aria-label="Guardar en favoritos"
-          onClick={() => alert("Guardado en favoritos (local)")}
-        >
-          <Heart className="size-4" />
-        </button>
+        <FavoriteButton id={property.id} className="absolute right-4 top-4" />
       </div>
 
       <div className="space-y-5 p-5">
@@ -81,9 +76,9 @@ function Detail() {
 
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
           {[
-            { k: "Dorm.", v: "2" },
-            { k: "Baños", v: "1" },
-            { k: "Área", v: "62 m²" },
+            { k: "Dorm.", v: String(property.bedrooms) },
+            { k: "Baños", v: String(property.bathrooms) },
+            { k: "Área", v: `${property.area} m²` },
           ].map((s) => (
             <div key={s.k} className="rounded-xl border border-border bg-card py-3">
               <p className="font-semibold text-foreground">{s.v}</p>

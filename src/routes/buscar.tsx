@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Search, SlidersHorizontal, MapPin } from "lucide-react";
 import { PROPERTIES } from "@/lib/local-store";
+import { PropertyImage } from "@/components/PropertyImage";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 export const Route = createFileRoute("/buscar")({
   head: () => ({
@@ -82,29 +84,34 @@ function Buscar() {
           </p>
         )}
         {results.map((r) => (
-          <button
+          <div
             key={r.id}
-            type="button"
-            onClick={() => navigate({ to: "/propiedad/$id", params: { id: r.id } })}
-            className="block w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+            className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
           >
-            <div className="h-36 w-full bg-primary-soft" />
-            <div className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="rounded-full bg-accent/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
-                  {r.tag}
-                </span>
-                <p className="text-sm font-semibold text-primary">
-                  {r.price}
-                  <span className="text-xs font-normal text-muted-foreground">/mes</span>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/propiedad/$id", params: { id: r.id } })}
+              className="block w-full text-left"
+            >
+              <PropertyImage src={r.image} alt={r.title} className="h-36 w-full" />
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-accent/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
+                    {r.tag}
+                  </span>
+                  <p className="text-sm font-semibold text-primary">
+                    {r.price}
+                    <span className="text-xs font-normal text-muted-foreground">/mes</span>
+                  </p>
+                </div>
+                <h3 className="mt-2 font-medium">{r.title}</h3>
+                <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                  <MapPin className="size-3" /> {r.city}
                 </p>
               </div>
-              <h3 className="mt-2 font-medium">{r.title}</h3>
-              <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-                <MapPin className="size-3" /> {r.city}
-              </p>
-            </div>
-          </button>
+            </button>
+            <FavoriteButton id={r.id} className="absolute right-3 top-3" />
+          </div>
         ))}
         <p className="pt-2 text-center text-xs text-muted-foreground">
           ¿Ya elegiste? <Link to="/contratos" className="text-primary underline">Formaliza tu contrato</Link>

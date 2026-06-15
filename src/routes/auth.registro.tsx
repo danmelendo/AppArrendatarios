@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { User, Mail, Phone, Lock, Loader2 } from "lucide-react";
+import { signIn } from "@/lib/demo-session";
 
 const schema = z.object({
   fullName: z.string().trim().min(2, "Nombre muy corto").max(80),
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/auth/registro")({
 });
 
 function Registro() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", password: "", terms: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -38,11 +40,12 @@ function Registro() {
       return;
     }
     setLoading(true);
-    // TODO(Claude): conectar a Lovable Cloud (supabase.auth.signUp + insert en profiles + crear loyalty_account)
-    // Ver CLAUDE.md §7 "Auth pendiente de Cloud".
+    // Demo: crea la cuenta localmente. Sustituir por supabase.auth.signUp
+    // (+ insert en profiles + loyalty_account) cuando se conecte el backend (CLAUDE.md §8).
     await new Promise((r) => setTimeout(r, 700));
+    signIn({ email: form.email, name: form.fullName });
     setLoading(false);
-    setMsg("Auth aún no conectada. Activa Lovable Cloud para crear cuentas reales.");
+    navigate({ to: "/perfil" });
   }
 
   return (
